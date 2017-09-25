@@ -1,0 +1,55 @@
+on init
+	make_perfview
+    set_ui_height_px (232)
+    set_control_par_str ($INST_WALLPAPER_ID,$CONTROL_PAR_PICTURE,"WallePaper")
+
+	declare $count
+
+	declare ui_slider $Attackish (0, 1000000)
+	declare ui_knob $Release (100,1000000,1)
+
+	{set_control_par_str (get_ui_id($Attackish), $CONTROL_PAR_PICTURE, “MonochromeKnob”)}
+	set_control_par_str(get_ui_id($Attackish),  $CONTROL_PAR_PICTURE, "MonochromeKnob")
+
+	{ hide the slider parts }
+    hide_part($Attackish,  $HIDE_PART_BG .or. $HIDE_PART_MOD_LIGHT .or. $HIDE_PART_TITLE .or. $HIDE_PART_VALUE)
+
+    { place it on the performance view }
+    move_control ($Attackish,  2, 6)
+    {move_control ($Attackish,2,8)}
+	move_control ($Release,5,8)
+
+	set_control_par (get_ui_id($Attackish), $CONTROL_PAR_MOUSE_BEHAVIOUR, -500)
+
+	$Attackish := get_engine_par($ENGINE_PAR_ATTACK, 0, find_mod(0,"ENV_AHDSR"), -1)
+	$Release := get_engine_par($ENGINE_PAR_RELEASE, 0, find_mod(0,"ENV_AHDSR"), -1)
+	
+	make_persistent($Attackish)
+	make_persistent($Release)
+	
+	read_persistent_var($Attackish)
+	read_persistent_var($Release)
+
+	{when you need to hide your knobs, use this: 
+	hide_part(<knob_name>,$HIDE_WHOLE_CONTROL)
+	}
+
+end on
+
+on ui_control ($Attackish)
+	$count := 0
+	while ($count < $NUM_GROUPS)
+		set_engine_par($ENGINE_PAR_ATTACK, $Attackish, $count, find_mod(0,"ENV_AHDSR"), -1)
+		inc($count)
+	end while
+
+end on
+
+on ui_control ($Release)
+	$count := 0
+	while ($count < $NUM_GROUPS)
+		set_engine_par($ENGINE_PAR_RELEASE, $Release, $count, find_mod(0,"ENV_AHDSR"), -1)
+		inc($count)
+	end while
+
+end on
